@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+
+  <style>
+      .loader {
+        width: 90px;
+        height: 20px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: -10px;
+        -webkit-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+        font-size: 0;
+      }
+      .loader-item {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-left: 10px;
+        border-radius: 50%;
+        background: black;
+        -webkit-animation: anim .8s infinite linear;
+                animation: anim .8s infinite linear;
+      }
+      .loader-item:nth-child(2) {
+        -webkit-animation-delay: -.6s;
+                animation-delay: -.6s;
+      }
+      .loader-item:nth-child(3) {
+        -webkit-animation-delay: -.4s;
+                animation-delay: -.4s;
+      }
+
+      @-webkit-keyframes anim {
+        0% {
+          -webkit-transform: translateY(0);
+                  transform: translateY(0);
+          opacity: .2;
+        }
+        50% {
+          -webkit-transform: translateY(-10px);
+                  transform: translateY(-10px);
+          opacity: .6;
+        }
+        100% {
+          -webkit-transform: translateY(0);
+                  transform: translateY(0);
+          opacity: .2;
+        }
+      }
+
+      @keyframes anim {
+        0% {
+          -webkit-transform: translateY(0);
+                  transform: translateY(0);
+          opacity: .2;
+        }
+        50% {
+          -webkit-transform: translateY(-10px);
+                  transform: translateY(-10px);
+          opacity: .6;
+        }
+        100% {
+          -webkit-transform: translateY(0);
+                  transform: translateY(0);
+          opacity: .2;
+        }
+      }
+
+      .p-main {
+        padding: 2rem;
+        text-align: center;
+      }
+      .error-title {
+        font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+        font-size: 2rem;
+        color: #dc3545;
+      }
+      .eror-subtitle {
+        font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+        font-size: 1.3rem;
+      }
+      .button {
+        font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+        display: inline-block;
+        background: #007bff;
+        color: #fff;
+        text-transform: uppercase;
+        padding: 20px 30px;
+        border-radius: 5px;
+        box-shadow: 0 17px 10px -10px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+        transition: all ease-in-out 300ms;
+      }
+      .fixed {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        left: 0;
+      }
+    </style>
+
+  <script src="cordova.js"></script>
+  <script src="lib/jquery-3.3.1.js"></script>
+  <script>
+    document.addEventListener('deviceready', function () {
+      var notificationOpenedCallback = function(jsonData) {
+        console.log('notificationOpenedCallback: ' + JSON.stringify(jsonData));
+      };
+      window.plugins.OneSignal
+        .startInit('a2f373b1-8370-4b3d-9413-bf09dd193956')
+        .handleNotificationOpened(notificationOpenedCallback)
+        .endInit();
+      }, false)
+  </script>
+  <script>
+    $.ajax({
+        type: "GET",
+        url: "https://www.google.com/",
+        success: function (suc) { 
+
+          document.addEventListener("deviceready", onDeviceReady, false);
+          function onDeviceReady() {
+            inAppBrowserRef = cordova.InAppBrowser.open('https://lizeto.ru/', '_blank', 'location=no,toolbar=no,zoom=no');
+            inAppBrowserRef.addEventListener('exit', exitCallBack);
+          }
+
+          function exitCallBack() {
+            navigator.app.exitApp();
+          }
+
+        },
+        error: function (err) { 
+
+          $(".loader").hide();
+          $("#offline").fadeIn();
+
+        }
+    });
+    function reLoad()
+    {
+      $(".loader").fadeIn();
+      $("#offline").hide();
+
+      $.ajax({
+          type: "GET",
+          url: "https://www.google.com/",
+          success: function (suc) { 
+
+            document.addEventListener("deviceready", onDeviceReady, false);
+            function onDeviceReady() {
+              inAppBrowserRef = cordova.InAppBrowser.open('https://lizeto.ru/', '_blank', 'location=no,toolbar=no');
+              inAppBrowserRef.addEventListener('exit', exitCallBack);
+            }
+
+            function exitCallBack() {
+              navigator.app.exitApp();
+            }
+
+          },
+          error: function (err) { 
+
+            $(".loader").hide();
+            $("#offline").fadeIn();
+
+          }
+      });
+    }
+  </script>
+</head>
+
+<body>
+
+  <div class="loader">
+    <div class="loader-item"></div>
+    <div class="loader-item"></div>
+    <div class="loader-item"></div>
+  </div>
+
+  <div id="offline" style="display:none">
+      <div class="p-main">
+        <img src="img/off.svg" style="width:100%">
+        <h1 class="error-title">Упс :(</h1>
+        <p class="eror-subtitle">Похоже Вы оффлайн</p>
+      </div>
+
+      <div class="p-main fixed">
+        <div class="button" onclick="reLoad()">Проверить снова</div>
+      </div>
+  </div>
+  
+</body>
+
+</html>
